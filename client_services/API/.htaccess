@@ -1,0 +1,27 @@
+<ifModule mod_rewrite.c>
+    <IfModule mod_headers.c>
+        # TODO: Limit Access-Control-Allow-Origin to specified domain only
+        Header set Access-Control-Allow-Origin *
+        Header set Access-Control-Allow-Credentials true
+        Header set Access-Control-Allow-Headers "Origin, X-Requested-With, X-PINGOTHER, Content-Type"
+        Header set Access-Control-Allow-Methods "PUT, GET, POST, DELETE, OPTIONS"
+    </IfModule>
+
+    # TODO: outsource auth to DB
+    SetEnvIfNoCase Host ^.*$ SECURED=yes
+
+    AuthType Basic
+    AuthName "VMCP"
+    AuthUserFile /var/www/API/.htpasswd
+    Require valid-user
+    Satisfy         any
+    Order           deny,allow
+    Deny from       env=SECURED
+
+    # Enable rewrite engine
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule (.*) index.php
+</ifModule>
